@@ -1,0 +1,102 @@
+CALCULADORA DE CHAPA DE NO (GUSSET PLATE) - PACOTE DE ARQUIVOS
+=================================================================
+
+Arquivos entregues:
+
+1) CalculadoraGussetPlate.exe
+   -> Executavel NATIVO PARA WINDOWS (64 bits), gerado com PyInstaller.
+      Nao precisa instalar Python nem nenhuma dependencia - so dar
+      duplo-clique. Inclui todas as funcionalidades: 4 abas (Geometria,
+      Material/Carga, HSS circular, UFM), seletor de unidades
+      (Imperial/Metrico), diagramas de referencia e exportacao de
+      relatorio em PDF.
+
+2) Chapas_de_No_Gusset_Plates_Relatorio_Tecnico.pdf
+   -> Relatorio tecnico completo em portugues: teoria da secao de
+      Whitmore, formulas geometricas (Chambers & Bartley, 2007), HSS
+      circular/shear lag (Cheng & Kulak, 2000), Metodo das Forcas
+      Uniformes - UFM (Packer & Richardson, 2025), exemplos praticos,
+      validacao numerica e descricao completa do programa.
+
+3) gusset_calc.py
+   -> Modulo de calculo puro (Whitmore + pseudo-colunas L1/L2/L3), sem
+      interface grafica. Pode ser importado em outros scripts.
+
+4) ufm_calc.py
+   -> Modulo de calculo do Metodo das Forcas Uniformes (UFM).
+
+5) gusset_app.py
+   -> Codigo-fonte da interface grafica (Tkinter + Matplotlib). E o que
+      foi compilado para gerar o CalculadoraGussetPlate.exe. Requer
+      gusset_calc.py e ufm_calc.py na mesma pasta para rodar via Python.
+
+-----------------------------------------------------------------
+COMO USAR O CalculadoraGussetPlate.exe
+-----------------------------------------------------------------
+1. Copie o arquivo para qualquer pasta do seu computador Windows.
+2. De um duplo-clique para abrir. Na primeira execucao, o Windows
+   Defender / SmartScreen pode exibir um aviso "Windows protegeu o
+   computador" (comum para executaveis novos, sem assinatura digital
+   reconhecida) - clique em "Mais informacoes" e depois em "Executar
+   assim mesmo".
+3. O aplicativo abre com 4 abas:
+   - Geometria (Whitmore): formulas de Chambers & Bartley (2007)
+   - Material / Carga: propriedades da chapa e verificacoes de resistencia
+   - HSS circular (shear lag): conexoes de HSS circular a chapa
+   - UFM - Diagonal HSS/WF: Metodo das Forcas Uniformes completo
+4. O seletor "Sistema de unidades" (Imperial/Metrico) fica no topo,
+   acima das abas, e se aplica a todos os campos.
+5. Os botoes "Ver diagrama de referencia" (nas abas Geometria e UFM)
+   abrem uma janela com um desenho explicando cada angulo e distancia
+   de entrada.
+
+-----------------------------------------------------------------
+SOBRE O PARAMETRO "L" (comprimento da linha de fixacao na diagonal)
+-----------------------------------------------------------------
+Nas abas "Geometria" e "UFM", o comprimento L e calculado
+automaticamente a partir de dois campos:
+   - NUMERO DE PARAFUSOS (ou pontos de solda) na linha de fixacao
+   - ESPACAMENTO entre eles (pitch)
+        L = (numero de parafusos - 1) x espacamento
+O desenho esquematico mostra exatamente esse numero de parafusos como
+circulos ao longo da linha de fixacao.
+
+-----------------------------------------------------------------
+COMO RODAR O CODIGO-FONTE (Windows, Mac ou Linux, com Python instalado)
+-----------------------------------------------------------------
+Caso prefira rodar a partir do codigo-fonte (por exemplo, no Mac ou
+Linux, onde o .exe nao funciona):
+1. Instale o Python 3.9 ou superior (https://www.python.org/downloads/).
+2. Abra um terminal na pasta com gusset_calc.py, ufm_calc.py e
+   gusset_app.py.
+3. Instale as dependencias:
+       pip install matplotlib numpy reportlab
+4. Execute:
+       python gusset_app.py
+
+Para gerar seu proprio executavel (ex.: um .app para Mac), instale o
+PyInstaller (pip install pyinstaller) e rode, na mesma pasta:
+       pyinstaller --onefile --windowed --name CalculadoraGussetPlate gusset_app.py
+
+-----------------------------------------------------------------
+OBSERVACOES IMPORTANTES
+-----------------------------------------------------------------
+- O desenho da chapa gerado pelo programa (aba Geometria) e ESQUEMATICO
+  (fora de escala), servindo para visualizar a posicao relativa da
+  largura de Whitmore, dos comprimentos de pseudo-coluna L1/L2/L3, e
+  agora tambem da inclinacao das interfaces quando theta_bb/theta_cc
+  (nao-ortogonalidade) sao diferentes de zero. Os VALORES NUMERICOS
+  calculados seguem rigorosamente as formulas fechadas de Chambers &
+  Bartley (2007), validadas contra os 12 exemplos publicados no artigo
+  original (ver Capitulo 3.5 do relatorio em PDF).
+
+- A aba UFM foi validada contra o exemplo do Steel Tube Institute (Packer
+  & Richardson, 2025) com boa concordancia geral (ver Capitulo 7.5 do
+  relatorio). Uma unica verificacao (plastificacao da parede da coluna
+  HSS, no caso de menor comprimento de contato) apresentou uma diferenca
+  nao totalmente esclarecida em relacao ao valor publicado no artigo -
+  recomenda-se conferir manualmente esse caso especifico contra o AISC
+  Design Guide 24 antes de uso em projeto.
+
+Este material tem finalidade de estudo e apoio ao calculo. Os resultados
+devem sempre ser conferidos por um engenheiro estrutural habilitado.

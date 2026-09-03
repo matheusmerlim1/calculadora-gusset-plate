@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calculadora de Chapa de Nó</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f7f7f8;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --muted: #5a5a5a;
+      --accent: #8e2c2c;
+      --accent-fg: #ffffff;
+      --border: #e2e2e2;
+      --warn-bg: #fff3e0;
+      --warn-border: #e0a94a;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #16171a;
+        --card: #1f2023;
+        --text: #eaeaea;
+        --muted: #a3a3a3;
+        --accent: #e07a7a;
+        --accent-fg: #1a0b0b;
+        --border: #313236;
+        --warn-bg: #2a2415;
+        --warn-border: #7a5a20;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.55;
+    }
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 48px 20px 80px;
+    }
+    h1 { font-size: 1.9rem; margin-bottom: 4px; }
+    .tagline { color: var(--muted); margin-top: 0; margin-bottom: 32px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    .download-btn {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--accent-fg);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 12px 22px;
+      border-radius: 8px;
+      font-size: 1.05rem;
+    }
+    .download-btn:hover { opacity: 0.9; }
+    .meta { color: var(--muted); font-size: 0.9rem; margin-top: 10px; }
+    ul, ol { padding-left: 1.2em; }
+    li { margin-bottom: 6px; }
+    code {
+      background: var(--border);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 0.92em;
+    }
+    .warn {
+      background: var(--warn-bg);
+      border: 1px solid var(--warn-border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      font-size: 0.95rem;
+    }
+    footer { color: var(--muted); font-size: 0.85rem; margin-top: 40px; }
+    footer a { color: inherit; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Calculadora de Chapa de Nó (Gusset Plate)</h1>
+    <p class="tagline">Dimensionamento e verificação de chapas de nó em ligações de contraventamento diagonal.</p>
+
+    <div class="card">
+      <a class="download-btn" href="https://github.com/matheusmerlim1/calculadora-gusset-plate/releases/latest/download/CalculadoraGussetPlate.exe">
+        ⬇ Baixar CalculadoraGussetPlate.exe
+      </a>
+      <p class="meta">Windows 64 bits · não precisa instalar Python nem nada além do próprio programa.</p>
+    </div>
+
+    <div class="card">
+      <h2>O que faz</h2>
+      <ul>
+        <li><strong>Geometria (Whitmore)</strong>: largura e área de Whitmore, comprimentos de pseudo-coluna L1/L2/L3 (Thornton), interfaces não ortogonais — Chambers &amp; Bartley (2007).</li>
+        <li><strong>Material / Carga</strong>: escoamento por tração, flambagem por compressão e bloco de cisalhamento equivalente (AISC 360 / AISC Manual).</li>
+        <li><strong>HSS circular</strong>: fator de retardo de cisalhamento (shear lag) — Cheng &amp; Kulak (2000).</li>
+        <li><strong>UFM — Diagonal HSS/WF</strong>: Método das Forças Uniformes completo, dimensionamento da chapa, solda, parafusos e plastificação da parede de coluna HSS (AISC Design Guide 24) — Packer &amp; Richardson (2025).</li>
+        <li>Seletor de unidades (Imperial/Métrico), diagramas de referência e exportação de relatório em PDF.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Como usar</h2>
+      <ol>
+        <li>Baixe o <code>CalculadoraGussetPlate.exe</code> e coloque numa pasta qualquer do seu computador.</li>
+        <li>Dê um duplo-clique para abrir. O Windows pode avisar que o executável não tem assinatura reconhecida — clique em "Mais informações" → "Executar assim mesmo".</li>
+        <li>Preencha os dados na aba correspondente (Geometria, Material/Carga, HSS circular ou UFM) e clique em "Calcular".</li>
+        <li>Use os botões de diagrama de referência para identificar cada variável de entrada.</li>
+        <li>Exporte o relatório em PDF quando terminar.</li>
+      </ol>
+    </div>
+
+    <div class="warn">
+      <strong>Este material tem finalidade de estudo e apoio ao cálculo.</strong>
+      Os resultados devem sempre ser conferidos por um engenheiro estrutural
+      habilitado. A aba UFM foi validada contra um exemplo publicado do Steel
+      Tube Institute, mas uma verificação específica (plastificação da parede
+      da coluna HSS para o menor comprimento de contato) apresenta diferença
+      não totalmente esclarecida em relação ao valor publicado — conferir
+      manualmente contra o AISC Design Guide 24 antes de uso em projeto.
+    </div>
+
+    <footer>
+      Código-fonte no <a href="https://github.com/matheusmerlim1/calculadora-gusset-plate">GitHub</a>.
+    </footer>
+  </main>
+</body>
+</html>
