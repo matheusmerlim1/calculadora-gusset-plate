@@ -1,12 +1,29 @@
+# Credenciais e segredos
+.env
+*.env
+secrets.json
+token.txt
+
 # Python
 __pycache__/
 *.pyc
 .pytest_cache/
+.venv/
+venv/
 
 # PyInstaller build/dist output (rebuild from src/ + PyInstaller command in README)
 build/
 dist/
+*.spec
 *.exe
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Guia local do GitHub
+githubGuia.md
 
 # Third-party reference material (copyright, not redistributed here)
 446843052-AISC-34-gusset-plate.xls

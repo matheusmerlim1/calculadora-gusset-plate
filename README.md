@@ -59,6 +59,10 @@ regressão, e `LEIA-ME.txt` para mais detalhes).
 |-- tests/
 |   |-- test_gusset_calc.py
 |   `-- test_ufm_calc.py
+|-- index.html                # pagina do projeto (GitHub Pages)
+|-- conftest.py               # poe src/ no sys.path para os testes
+|-- LEIA-ME.txt               # instrucoes de uso do executavel
+|-- Chapas_de_No_Gusset_Plates_Relatorio_Tecnico.pdf
 |-- requirements.txt          # dependencias de runtime
 |-- requirements-dev.txt      # + pytest, para rodar os testes
 |-- requirements-build.txt    # + pyinstaller, para gerar o .exe
