@@ -57,9 +57,17 @@ regressão, e `LEIA-ME.txt` para mais detalhes).
 |   |-- gusset_calc.py    # motor de calculo: Whitmore + pseudo-colunas + HSS circular
 |   `-- ufm_calc.py       # motor de calculo: Metodo das Forcas Uniformes (UFM)
 |-- tests/
-|   |-- test_gusset_calc.py
-|   `-- test_ufm_calc.py
+|   |-- test_gusset_calc.py     # geometria: Exemplo 1 de Chambers & Bartley
+|   |-- test_ufm_calc.py        # UFM: regressao do exemplo do Steel Tube Institute
+|   |-- test_whitmore_js.mjs    # o porte JS bate com o motor Python?
+|   `-- fixtures_whitmore.json  # valores de referencia gerados pelo Python
+|-- tools/
+|   `-- gen_js_fixtures.py    # regenera as fixtures a partir de gusset_calc.py
 |-- index.html                # pagina do projeto (GitHub Pages)
+|-- css/site.css              # estilo da pagina
+|-- js/whitmore.js            # porte JS da secao de Whitmore, usado na demo ao vivo
+|-- js/site.js                # abas, tema, lightbox e a demo da pagina
+|-- img/                      # capturas de tela e diagramas usados na pagina
 |-- conftest.py               # poe src/ no sys.path para os testes
 |-- LEIA-ME.txt               # instrucoes de uso do executavel
 |-- Chapas_de_No_Gusset_Plates_Relatorio_Tecnico.pdf
@@ -67,6 +75,23 @@ regressão, e `LEIA-ME.txt` para mais detalhes).
 |-- requirements-dev.txt      # + pytest, para rodar os testes
 |-- requirements-build.txt    # + pyinstaller, para gerar o .exe
 `-- .gitignore
+```
+
+## A pagina do projeto
+
+`index.html` publica em GitHub Pages uma pagina com capturas de tela do
+programa, a explicacao de cada aba e uma demonstracao ao vivo da secao de
+Whitmore que roda no navegador.
+
+Essa demonstracao nao reimplementa o calculo por conta propria: `js/whitmore.js`
+e um porte fiel do trecho correspondente de `src/gusset_calc.py`, e
+`tests/test_whitmore_js.mjs` compara os dois contra os valores de
+`tests/fixtures_whitmore.json` exigindo concordancia ate a ultima casa do
+double. Se uma das duas implementacoes mudar sozinha, a CI falha.
+
+```bash
+node --test tests/test_whitmore_js.mjs   # roda a comparacao
+python tools/gen_js_fixtures.py          # regenera as fixtures pelo motor Python
 ```
 
 `CalculadoraGussetPlate.exe` é artefato de build e fica fora do controle de
@@ -78,6 +103,7 @@ planilha de referência também ficam fora do repositório (direitos autorais).
 ```powershell
 python -m pip install -r requirements-dev.txt
 python -m pytest tests -q
+node --test tests/test_whitmore_js.mjs
 python src\gusset_app.py
 ```
 

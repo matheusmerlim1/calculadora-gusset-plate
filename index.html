@@ -3,134 +3,746 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Calculadora de Chapa de Nó</title>
-  <style>
-    :root {
-      color-scheme: light dark;
-      --bg: #f7f7f8;
-      --card: #ffffff;
-      --text: #1a1a1a;
-      --muted: #5a5a5a;
-      --accent: #8e2c2c;
-      --accent-fg: #ffffff;
-      --border: #e2e2e2;
-      --warn-bg: #fff3e0;
-      --warn-border: #e0a94a;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #16171a;
-        --card: #1f2023;
-        --text: #eaeaea;
-        --muted: #a3a3a3;
-        --accent: #e07a7a;
-        --accent-fg: #1a0b0b;
-        --border: #313236;
-        --warn-bg: #2a2415;
-        --warn-border: #7a5a20;
-      }
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-      line-height: 1.55;
-    }
-    main {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 48px 20px 80px;
-    }
-    h1 { font-size: 1.9rem; margin-bottom: 4px; }
-    .tagline { color: var(--muted); margin-top: 0; margin-bottom: 32px; }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 28px;
-      margin-bottom: 24px;
-    }
-    .download-btn {
-      display: inline-block;
-      background: var(--accent);
-      color: var(--accent-fg);
-      text-decoration: none;
-      font-weight: 600;
-      padding: 12px 22px;
-      border-radius: 8px;
-      font-size: 1.05rem;
-    }
-    .download-btn:hover { opacity: 0.9; }
-    .meta { color: var(--muted); font-size: 0.9rem; margin-top: 10px; }
-    ul, ol { padding-left: 1.2em; }
-    li { margin-bottom: 6px; }
-    code {
-      background: var(--border);
-      padding: 1px 6px;
-      border-radius: 4px;
-      font-size: 0.92em;
-    }
-    .warn {
-      background: var(--warn-bg);
-      border: 1px solid var(--warn-border);
-      border-radius: 10px;
-      padding: 16px 20px;
-      font-size: 0.95rem;
-    }
-    footer { color: var(--muted); font-size: 0.85rem; margin-top: 40px; }
-    footer a { color: inherit; }
-  </style>
+  <title>Calculadora de Chapa de Nó (Gusset Plate)</title>
+  <meta name="description" content="Ferramenta desktop para dimensionamento e verificação de chapas de nó em ligações de contraventamento: seção de Whitmore, pseudo-colunas de Thornton, HSS circular e Método das Forças Uniformes (UFM)." />
+  <meta name="author" content="Matheus Raposo" />
+  <meta name="color-scheme" content="light dark" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Calculadora de Chapa de Nó (Gusset Plate)" />
+  <meta property="og:description" content="Whitmore, pseudo-colunas de Thornton, HSS circular e Método das Forças Uniformes, num programa de Windows que não precisa de instalação." />
+  <meta property="og:image" content="https://matheusmerlim1.github.io/calculadora-gusset-plate/img/aba-geometria.png" />
+  <meta property="og:url" content="https://matheusmerlim1.github.io/calculadora-gusset-plate/" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="stylesheet" href="css/site.css" />
+
+  <script>
+    /* Marca que ha JavaScript antes da primeira pintura. So entao o CSS
+       esconde os blocos que serao revelados ao rolar, e so entao o tema
+       salvo e aplicado - evita o "pisca" de tema claro ao carregar. */
+    (function () {
+      var raiz = document.documentElement;
+      raiz.classList.add("js");
+      try {
+        var t = localStorage.getItem("gusset-tema");
+        if (t === "dark" || t === "light") raiz.setAttribute("data-theme", t);
+      } catch (e) { /* modo privado: segue no tema do sistema */ }
+    })();
+  </script>
 </head>
 <body>
-  <main>
-    <h1>Calculadora de Chapa de Nó (Gusset Plate)</h1>
-    <p class="tagline">Dimensionamento e verificação de chapas de nó em ligações de contraventamento diagonal.</p>
 
-    <div class="card">
-      <a class="download-btn" href="https://github.com/matheusmerlim1/calculadora-gusset-plate/releases/latest/download/CalculadoraGussetPlate.exe">
-        ⬇ Baixar CalculadoraGussetPlate.exe
-      </a>
-      <p class="meta">Windows 64 bits · não precisa instalar Python nem nada além do próprio programa.</p>
-    </div>
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="#inicio">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 20h18" /><path d="M5 20V8l7-5 7 5v12" /><path d="M5 8l14 12" />
+      </svg>
+      Chapa de Nó
+    </a>
 
-    <div class="card">
-      <h2>O que faz</h2>
+    <button class="icon-btn nav-toggle" type="button" aria-expanded="false" aria-controls="nav-principal" aria-label="Abrir o menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M4 7h16M4 12h16M4 17h16" />
+      </svg>
+    </button>
+
+    <nav class="site-nav" id="nav-principal" aria-label="Seções da página">
       <ul>
-        <li><strong>Geometria (Whitmore)</strong>: largura e área de Whitmore, comprimentos de pseudo-coluna L1/L2/L3 (Thornton), interfaces não ortogonais — Chambers &amp; Bartley (2007).</li>
-        <li><strong>Material / Carga</strong>: escoamento por tração, flambagem por compressão e bloco de cisalhamento equivalente (AISC 360 / AISC Manual).</li>
-        <li><strong>HSS circular</strong>: fator de retardo de cisalhamento (shear lag) — Cheng &amp; Kulak (2000).</li>
-        <li><strong>UFM — Diagonal HSS/WF</strong>: Método das Forças Uniformes completo, dimensionamento da chapa, solda, parafusos e plastificação da parede de coluna HSS (AISC Design Guide 24) — Packer &amp; Richardson (2025).</li>
-        <li>Seletor de unidades (Imperial/Métrico), diagramas de referência e exportação de relatório em PDF.</li>
+        <li><a href="#etapas">Como funciona</a></li>
+        <li><a href="#abas">As quatro abas</a></li>
+        <li><a href="#demo">Teste aqui</a></li>
+        <li><a href="#diagramas">Diagramas</a></li>
+        <li><a href="#validacao">Validação</a></li>
+        <li><a href="#referencias">Referências</a></li>
+      </ul>
+    </nav>
+
+    <button class="icon-btn theme-toggle" type="button" aria-label="Mudar para tema escuro">
+      <svg class="sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+      </svg>
+      <svg class="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+      </svg>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============================================================ hero -->
+  <section class="hero" id="inicio">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <span class="eyebrow">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M20 6L9 17l-5-5" /></svg>
+            AISC 360 &middot; Design Guide 24
+          </span>
+
+          <h1>Calculadora de Chapa de Nó</h1>
+
+          <p class="lead">
+            Dimensionamento e verificação de <em>gusset plates</em> em ligações de
+            contraventamento diagonal &mdash; seção de Whitmore, pseudo-colunas de
+            Thornton, HSS circular e o Método das Forças Uniformes, num único
+            programa de Windows que roda sem instalar nada.
+          </p>
+
+          <div class="cta-row">
+            <a class="btn btn-primary" href="https://github.com/matheusmerlim1/calculadora-gusset-plate/releases/latest/download/CalculadoraGussetPlate.exe">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="M7 10l5 5 5-5" /><path d="M12 15V3" />
+              </svg>
+              Baixar para Windows
+            </a>
+            <a class="btn btn-ghost" href="https://github.com/matheusmerlim1/calculadora-gusset-plate">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.2 4.7 18.2 5 18.2 5c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5z" />
+              </svg>
+              Ver o código
+            </a>
+          </div>
+
+          <p class="hero-meta">Windows 64 bits &middot; ~47 MB &middot; não precisa de Python nem de instalador</p>
+
+          <div class="badges">
+            <span class="badge">Python 3.11</span>
+            <span class="badge">Tkinter + Matplotlib</span>
+            <span class="badge">Imperial e métrico</span>
+            <span class="badge">Relatório em PDF</span>
+            <span class="badge">Código aberto</span>
+          </div>
+        </div>
+
+        <div class="window zoomable reveal">
+          <div class="window-bar">
+            <i></i><i></i><i></i>
+            <span>Calculadora de Chapa de Nó &mdash; aba Geometria (Whitmore)</span>
+          </div>
+          <img src="img/aba-geometria.png" width="1280" height="800"
+               alt="Janela do programa na aba Geometria: à esquerda os campos de entrada da chapa, à direita o desenho esquemático com a largura de Whitmore e o relatório de resultados."
+               loading="eager" decoding="async" />
+        </div>
+      </div>
+
+      <div class="stats reveal">
+        <div class="stat"><b>4</b><span>abas de verificação</span></div>
+        <div class="stat"><b>12</b><span>exemplos do artigo conferidos</span></div>
+        <div class="stat"><b>2</b><span>sistemas de unidades</span></div>
+        <div class="stat"><b>17</b><span>testes automatizados</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================== etapas -->
+  <section class="section section-alt" id="etapas">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="kicker">Como funciona</p>
+        <h2>Do dado de entrada ao relatório, em seis etapas</h2>
+        <p>
+          O programa segue o mesmo roteiro de uma verificação feita à mão: define-se a
+          geometria da chapa, aplicam-se as verificações de resistência e, no fim,
+          distribui-se a força da diagonal entre a viga e a coluna. Cada etapa abaixo
+          corresponde a algo que você realmente faz na tela.
+        </p>
+      </div>
+
+      <div class="steps">
+        <article class="step reveal">
+          <h3>Escolher o sistema de unidades</h3>
+          <p>
+            O seletor fica no topo, acima das abas, e vale para todos os campos.
+            Ao trocar entre <b>Imperial</b> (in / ksi / kips) e <b>Métrico</b>
+            (mm / MPa / kN), os rótulos e os valores já preenchidos são convertidos
+            juntos &mdash; não é preciso recalcular nada à mão.
+          </p>
+        </article>
+
+        <article class="step reveal">
+          <h3>Descrever a geometria da chapa</h3>
+          <p>
+            Altura <code>H</code>, largura <code>W</code>, as distâncias <code>a</code> e
+            <code>b</code> até os centroides das ligações e os ângulos das interfaces com
+            a viga e com a coluna. O comprimento <code>L</code> da linha de fixação não é
+            digitado: sai de <code>(nº de parafusos − 1) × pitch</code>.
+          </p>
+        </article>
+
+        <article class="step reveal">
+          <h3>Ver a chapa desenhada na hora</h3>
+          <p>
+            A cada cálculo o painel direito redesenha a chapa em escala esquemática, com a
+            seção de Whitmore em verde, a linha de parafusos, a quina e a linha de trabalho
+            da diagonal. É assim que se percebe rápido quando um ângulo foi digitado
+            com o sinal trocado.
+          </p>
+        </article>
+
+        <article class="step reveal">
+          <h3>Aplicar as verificações de resistência</h3>
+          <p>
+            Com a espessura, o aço e a carga fatorada, a aba Material/Carga calcula
+            escoamento por tração, flambagem da pseudo-coluna de Thornton e o bloco de
+            cisalhamento equivalente, devolvendo as razões demanda/capacidade de cada uma.
+          </p>
+        </article>
+
+        <article class="step reveal">
+          <h3>Rodar as verificações especiais</h3>
+          <p>
+            Diagonal de HSS circular fendido? A aba de <em>shear lag</em> dá o fator
+            <code>U</code>. Ligação completa a viga e coluna? A aba UFM distribui a força
+            da diagonal e dimensiona chapa, solda, parafusos e a parede da coluna HSS.
+          </p>
+        </article>
+
+        <article class="step reveal">
+          <h3>Exportar o relatório</h3>
+          <p>
+            O botão <b>Exportar relatório (PDF)</b> grava num arquivo só o desenho da chapa,
+            todos os dados de entrada e o memorial de cálculo com os valores intermediários
+            &mdash; pronto para anexar à verificação.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ abas -->
+  <section class="section" id="abas">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="kicker">As quatro abas</p>
+        <h2>O que cada aba calcula, e com que fórmula</h2>
+        <p>
+          As quatro abas resolvem problemas diferentes e complementares. Clique para
+          percorrer cada uma: as capturas são da tela real do programa, com o
+          Exemplo 1 do artigo de Chambers &amp; Bartley já carregado.
+        </p>
+      </div>
+
+      <div class="tabs-shell reveal">
+        <div class="tablist" role="tablist" aria-label="Abas do programa">
+          <button role="tab" id="tab-geo" aria-controls="painel-geo" aria-selected="true">Geometria (Whitmore)</button>
+          <button role="tab" id="tab-mat" aria-controls="painel-mat" aria-selected="false" tabindex="-1">Material / Carga</button>
+          <button role="tab" id="tab-hss" aria-controls="painel-hss" aria-selected="false" tabindex="-1">HSS circular</button>
+          <button role="tab" id="tab-ufm" aria-controls="painel-ufm" aria-selected="false" tabindex="-1">UFM</button>
+        </div>
+
+        <!-- ---------------------------------------------------- geometria -->
+        <div class="tabpanel" role="tabpanel" id="painel-geo" aria-labelledby="tab-geo">
+          <div class="tab-grid">
+            <div class="tab-copy">
+              <h3>Geometria da chapa e seção de Whitmore</h3>
+              <p>
+                A força que chega pela diagonal não age sobre a chapa inteira: ela se espalha
+                a partir do primeiro conector num ângulo de 30°, e só essa faixa &mdash; a
+                <b>seção de Whitmore</b> &mdash; é considerada efetiva. Esta aba monta a
+                geometria da chapa, encontra essa faixa e mede os comprimentos de
+                pseudo-coluna que a etapa seguinte vai usar na flambagem.
+              </p>
+
+              <div class="formula">
+                Lw = 2 &middot; L &middot; tan 30° + s
+                <em>Largura de Whitmore, com <code>s</code> sendo o espaçamento perpendicular entre linhas de parafusos (gramp).</em>
+              </div>
+
+              <div class="kv">
+                <h4>O que você informa</h4>
+                <dl>
+                  <div><dt>H, W</dt><dd>altura e largura totais da chapa</dd></div>
+                  <div><dt>a, b</dt><dd>distâncias da face da coluna e da viga até os centroides das ligações</dd></div>
+                  <div><dt>n, pitch</dt><dd>número de parafusos e espaçamento entre eles, de onde sai <code>L</code></dd></div>
+                  <div><dt>Le, s</dt><dd>afastamento do primeiro parafuso à quina e gramp entre linhas</dd></div>
+                  <div><dt>&theta;b, &theta;c</dt><dd>ângulos das bordas livres, lado viga e lado coluna</dd></div>
+                  <div><dt>&theta;bb, &theta;cc</dt><dd>não-ortogonalidade das interfaces (0 = interfaces em esquadro)</dd></div>
+                </dl>
+              </div>
+
+              <div class="kv">
+                <h4>O que sai</h4>
+                <dl>
+                  <div><dt>&theta;B</dt><dd>ângulo da quina, <b>deduzido da geometria</b> &mdash; não é entrada</dd></div>
+                  <div><dt>Lw</dt><dd>largura de Whitmore, e o aviso de quando ela ultrapassa a borda da chapa e entra na viga ou na coluna</dd></div>
+                  <div><dt>yb, yc</dt><dd>distâncias da seção de Whitmore até cada interface</dd></div>
+                  <div><dt>L1, L2, L3</dt><dd>comprimentos de pseudo-coluna de Thornton, incluindo o caso de interfaces não ortogonais</dd></div>
+                </dl>
+              </div>
+
+              <p class="src">
+                <strong>Base:</strong> fórmulas fechadas de Chambers &amp; Bartley (2007), com a
+                errata de 2008. Os 12 exemplos publicados no artigo são reproduzidos pelo
+                programa; o Exemplo 1 está fixado em <code>tests/test_gusset_calc.py</code>.
+              </p>
+            </div>
+
+            <figure class="zoomable">
+              <img src="img/aba-geometria.png" width="1280" height="800" loading="lazy" decoding="async"
+                   alt="Aba Geometria do programa: campos de H, W, a, b, parafusos e ângulos à esquerda; desenho da chapa com a seção de Whitmore em verde à direita." />
+              <figcaption>Aba Geometria &mdash; o desenho acompanha os campos em tempo real.</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <!-- ----------------------------------------------------- material -->
+        <div class="tabpanel" role="tabpanel" id="painel-mat" aria-labelledby="tab-mat" hidden>
+          <div class="tab-grid">
+            <div class="tab-copy">
+              <h3>Material, carga e as três verificações</h3>
+              <p>
+                Com a geometria resolvida, esta aba aplica as verificações de resistência
+                sobre a área de Whitmore. A chapa comprimida é tratada como uma
+                <b>pseudo-coluna</b>: uma faixa de largura <code>Lw</code> e espessura
+                <code>tp</code>, cujo comprimento de flambagem é a média de L1, L2 e L3.
+              </p>
+
+              <div class="formula">
+                Aw = Lw &middot; tp<br />
+                &phi;Pn,esc = &phi;y &middot; Fy &middot; Aw<br />
+                r = tp / &radic;12&nbsp;&nbsp;&nbsp;KL/r = K &middot; Lc / r<br />
+                Fcr = 0,658<sup>(Fy/Fe)</sup> &middot; Fy&nbsp;&nbsp;ou&nbsp;&nbsp;0,877 &middot; Fe
+                <em>Escoamento pela Eq. 9-1 do AISC Manual; flambagem pelo Capítulo E do AISC 360, com o ramo elástico valendo a partir de KL/r &gt; 4,71&radic;(E/Fy).</em>
+              </div>
+
+              <div class="kv">
+                <h4>O que você informa</h4>
+                <dl>
+                  <div><dt>tp</dt><dd>espessura da chapa</dd></div>
+                  <div><dt>Fy, Fu</dt><dd>escoamento e ruptura do aço da chapa</dd></div>
+                  <div><dt>Pu</dt><dd>carga fatorada que chega pela diagonal</dd></div>
+                  <div><dt>&phi;y, &phi;c</dt><dd>coeficientes de resistência à tração e à compressão</dd></div>
+                  <div><dt>K</dt><dd>fator de comprimento efetivo da pseudo-coluna</dd></div>
+                  <div><dt>E</dt><dd>módulo de elasticidade</dd></div>
+                </dl>
+              </div>
+
+              <div class="kv">
+                <h4>O que sai</h4>
+                <dl>
+                  <div><dt>escoamento</dt><dd>&phi;Pn por tração na seção de Whitmore</dd></div>
+                  <div><dt>flambagem</dt><dd>&phi;Pn por compressão, via KL/r e Fcr</dd></div>
+                  <div><dt>bloco</dt><dd>bloco de cisalhamento equivalente de Williams &amp; Richard (1986)</dd></div>
+                  <div><dt>DCR</dt><dd>razão demanda/capacidade de cada verificação</dd></div>
+                </dl>
+              </div>
+
+              <p class="src">
+                <strong>Experimente:</strong> essas mesmas contas rodam no seu navegador na
+                <a href="#demo">seção seguinte</a> &mdash; o código JavaScript é um porte do
+                motor Python, conferido contra ele a cada execução dos testes.
+              </p>
+            </div>
+
+            <figure class="zoomable">
+              <img src="img/aba-material.png" width="1280" height="800" loading="lazy" decoding="async"
+                   alt="Aba Material / Carga: campos de espessura, Fy, Fu, carga fatorada, coeficientes phi, K e E." />
+              <figcaption>Aba Material / Carga &mdash; oito entradas, três verificações.</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <!-- ---------------------------------------------------------- hss -->
+        <div class="tabpanel" role="tabpanel" id="painel-hss" aria-labelledby="tab-hss" hidden>
+          <div class="tab-grid">
+            <div class="tab-copy">
+              <h3>HSS circular fendido: retardo de cisalhamento</h3>
+              <p>
+                Quando a diagonal é um tubo circular fendido e soldado à chapa, a força não
+                entra uniformemente na seção do tubo: as regiões distantes da solda são
+                menos solicitadas. Esse <em>shear lag</em> é levado em conta por um fator
+                <code>U</code> que reduz a área efetiva.
+              </p>
+
+              <div class="formula">
+                x&#772; = D / &pi;<br />
+                U = min(1 &minus; x&#772;/L , 0,90)<br />
+                Ae = An &middot; U&nbsp;&nbsp;&nbsp;&phi;Pn = &phi;t &middot; Fu &middot; Ae
+                <em>Excentricidade x&#772; de um meio-tubo; a área líquida An desconta as duas fendas quando não há solda transversal na extremidade.</em>
+              </div>
+
+              <div class="kv">
+                <h4>O que você informa</h4>
+                <dl>
+                  <div><dt>D, t</dt><dd>diâmetro externo e espessura de parede do tubo</dd></div>
+                  <div><dt>L</dt><dd>comprimento da solda longitudinal</dd></div>
+                  <div><dt>Fy, Fu</dt><dd>escoamento e ruptura do aço do tubo</dd></div>
+                  <div><dt>solda transversal</dt><dd>marcar se houver solda fechando a extremidade da fenda</dd></div>
+                </dl>
+              </div>
+
+              <div class="kv">
+                <h4>O que sai</h4>
+                <dl>
+                  <div><dt>U</dt><dd>fator de retardo de cisalhamento</dd></div>
+                  <div><dt>Ag, An, Ae</dt><dd>áreas bruta, líquida e efetiva do tubo</dd></div>
+                  <div><dt>&phi;Pn</dt><dd>resistência à tração do tubo na ligação</dd></div>
+                  <div><dt>recomendação</dt><dd>aviso quando <code>L &ge; 1,3 D</code>, condição em que Cheng &amp; Kulak dispensam a redução</dd></div>
+                </dl>
+              </div>
+
+              <p class="src">
+                <strong>Base:</strong> Cheng &amp; Kulak (2000), <em>Gusset Plate Connection to
+                Round HSS Tension Members</em>, e a Especificação AISC para HSS, item 2.1b.
+              </p>
+            </div>
+
+            <figure class="zoomable">
+              <img src="img/aba-hss.png" width="1280" height="800" loading="lazy" decoding="async"
+                   alt="Aba HSS circular: diâmetro, espessura de parede, comprimento de solda, Fy e Fu do tubo, e a opção de solda transversal." />
+              <figcaption>Aba HSS circular &mdash; cinco entradas e a marcação da solda transversal.</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <!-- ---------------------------------------------------------- ufm -->
+        <div class="tabpanel" role="tabpanel" id="painel-ufm" aria-labelledby="tab-ufm" hidden>
+          <div class="tab-grid">
+            <div class="tab-copy">
+              <h3>Método das Forças Uniformes: a ligação inteira</h3>
+              <p>
+                As três abas anteriores olham para a chapa. O <b>UFM</b> olha para a ligação
+                completa: ele escolhe a posição dos centroides de modo que <em>não apareça
+                momento</em> em nenhuma das interfaces, e daí distribui a força da diagonal
+                em quatro componentes &mdash; duas na interface com a viga, duas na interface
+                com a coluna.
+              </p>
+
+              <div class="formula">
+                &alpha; &minus; &beta;&middot;tan&theta; = eb&middot;tan&theta; &minus; ec<br />
+                r = &radic;[(&alpha;+ec)² + (&beta;+eb)²]<br />
+                Vrc = (&beta;/r)&middot;Pr&nbsp;&nbsp;Hrc = (ec/r)&middot;Pr<br />
+                Vrb = (eb/r)&middot;Pr&nbsp;&nbsp;Hrb = (&alpha;/r)&middot;Pr
+                <em>Informando &alpha; <b>ou</b> &beta;, o outro sai da equação de compatibilidade; se você informar os dois e eles não fecharem, o programa avisa.</em>
+              </div>
+
+              <div class="kv">
+                <h4>O que você informa</h4>
+                <dl>
+                  <div><dt>A) geometria</dt><dd>Pr, ângulo &theta; da diagonal, eb, ec e &alpha; (ou &beta;)</dd></div>
+                  <div><dt>B) chapa</dt><dd>parafusos da diagonal, w0, Lc, K, Fy e a lista de espessuras candidatas</dd></div>
+                  <div><dt>C) solda</dt><dd>Fexx, perna do filete, comprimento e número de linhas</dd></div>
+                  <div><dt>D) parafusos</dt><dd>Fnv, diâmetro, quantidade e a chapa ligada mais fina</dd></div>
+                  <div><dt>E) coluna HSS</dt><dd>Fy, espessura de parede, comprimento de contato La, largura B e carga na coluna</dd></div>
+                </dl>
+              </div>
+
+              <div class="kv">
+                <h4>O que sai</h4>
+                <dl>
+                  <div><dt>&alpha;, &beta;, r</dt><dd>a geometria que zera os momentos nas interfaces</dd></div>
+                  <div><dt>4 forças</dt><dd>Vrc, Hrc, Vrb e Hrb nas interfaces chapa-coluna e chapa-viga</dd></div>
+                  <div><dt>dimensões</dt><dd>comprimentos mínimos da chapa ao longo da viga e da coluna</dd></div>
+                  <div><dt>tabela de tp</dt><dd>varredura das espessuras candidatas, com KL/r, &phi;Pn e o veredito passa / não passa de cada uma</dd></div>
+                  <div><dt>solda, parafusos, coluna</dt><dd>verificações rápidas de cada elemento da ligação</dd></div>
+                </dl>
+              </div>
+
+              <p class="src">
+                <strong>Base:</strong> AISC Manual Parte 13; Packer &amp; Richardson (2025),
+                Steel Tube Institute; AISC Design Guide 24 para a plastificação da parede da
+                coluna HSS. <a href="#validacao">Leia a ressalva de validação</a> antes de usar
+                a última verificação em projeto.
+              </p>
+            </div>
+
+            <div>
+              <figure class="zoomable" style="margin-bottom:18px">
+                <img src="img/aba-ufm.png" width="1280" height="800" loading="lazy" decoding="async"
+                     alt="Aba UFM: grupos de entrada A (geometria e força da diagonal) e B (seção de Whitmore e flambagem da chapa)." />
+                <figcaption>Entradas do UFM, agrupadas de A a E.</figcaption>
+              </figure>
+              <figure class="zoomable">
+                <img src="img/aba-ufm-resultados.png" width="1280" height="800" loading="lazy" decoding="async"
+                     alt="Aba UFM rolada até o relatório: alpha, beta, r, as quatro forças de interface, dimensões mínimas da chapa e a tabela de espessuras candidatas com o veredito de cada uma." />
+                <figcaption>O relatório do UFM, com a varredura de espessuras no fim.</figcaption>
+              </figure>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ demo -->
+  <section class="section section-alt" id="demo">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="kicker">Teste aqui</p>
+        <h2>A seção de Whitmore, ao vivo no navegador</h2>
+        <p>
+          Mexa nos controles e veja a faixa efetiva abrir e fechar. As contas são as
+          mesmas do programa: o arquivo <code>js/whitmore.js</code> é um porte de
+          <code>src/gusset_calc.py</code>, e um teste automatizado compara os dois a
+          cada execução, exigindo concordância até a última casa do <em>double</em>.
+        </p>
+      </div>
+
+      <div class="demo reveal" id="demo-whitmore">
+        <div class="controls">
+          <div class="control">
+            <label for="in-preset">Ponto de partida</label>
+            <select id="in-preset">
+              <option value="exemplo">Exemplo 1 do artigo</option>
+              <option value="esbelta">Chapa fina e esbelta</option>
+              <option value="robusta">Chapa espessa e curta</option>
+            </select>
+          </div>
+
+          <div class="control">
+            <label for="in-L">Linha de conectores <var id="val-L">13,0 in</var></label>
+            <input type="range" id="in-L" min="2" max="24" step="0.5" value="13" />
+          </div>
+
+          <div class="control">
+            <label for="in-s">Gramp entre linhas <var id="val-s">3,0 in</var></label>
+            <input type="range" id="in-s" min="0" max="8" step="0.5" value="3" />
+          </div>
+
+          <div class="control">
+            <label for="in-tp">Espessura da chapa <var id="val-tp">0,500 in</var></label>
+            <input type="range" id="in-tp" min="0.25" max="1.25" step="0.0625" value="0.5" />
+          </div>
+
+          <div class="control">
+            <label for="in-Fy">Escoamento Fy <var id="val-Fy">50,0 ksi</var></label>
+            <input type="range" id="in-Fy" min="36" max="65" step="1" value="50" />
+          </div>
+
+          <div class="control">
+            <label for="in-Lc">Pseudo-coluna Lc <var id="val-Lc">5,0 in</var></label>
+            <input type="range" id="in-Lc" min="0" max="30" step="0.5" value="5" />
+          </div>
+
+          <div class="control">
+            <label for="in-K">Fator K <var id="val-K">0,50</var></label>
+            <input type="range" id="in-K" min="0.5" max="1.2" step="0.05" value="0.5" />
+          </div>
+
+          <div class="control">
+            <label for="in-Pu">Carga fatorada Pu <var id="val-Pu">127,0 kips</var></label>
+            <input type="range" id="in-Pu" min="20" max="600" step="1" value="127" />
+          </div>
+        </div>
+
+        <div class="demo-out">
+          <div class="viz">
+            <svg id="viz-whitmore" viewBox="0 0 520 300" role="img"
+                 aria-label="Desenho do espalhamento da força a 30 graus a partir da linha de conectores, formando a largura de Whitmore."></svg>
+          </div>
+
+          <div class="results">
+            <div class="result"><span>Largura Lw</span><b id="out-Lw">--</b></div>
+            <div class="result"><span>Área Aw</span><b id="out-Aw">--</b></div>
+            <div class="result"><span>Esbeltez KL/r</span><b id="out-KLr">--</b></div>
+            <div class="result"><span>Tensão Fcr</span><b id="out-Fcr">--</b></div>
+            <div class="result"><span>&phi;Pn escoamento</span><b id="out-phiPny">--</b></div>
+            <div class="result"><span>&phi;Pn flambagem</span><b id="out-phiPnb">--</b></div>
+          </div>
+
+          <div class="dcr">
+            <div class="dcr-row" id="dcr-y">
+              <span>Escoamento</span>
+              <span class="dcr-bar"><i></i></span>
+              <span class="dcr-val">--</span>
+            </div>
+            <div class="dcr-row" id="dcr-b">
+              <span>Flambagem</span>
+              <span class="dcr-bar"><i></i></span>
+              <span class="dcr-val">--</span>
+            </div>
+          </div>
+
+          <p class="demo-note">
+            Razão demanda/capacidade: acima de 1,00 a barra fica vermelha e a verificação
+            não passa. Unidades imperiais, com E = 29 000 ksi e &phi; = 0,90 nas duas
+            verificações. Esta demonstração cobre só a seção de Whitmore &mdash; a
+            geometria completa, o bloco de cisalhamento, o HSS e o UFM estão no programa.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================= diagramas -->
+  <section class="section" id="diagramas">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="kicker">Diagramas</p>
+        <h2>Nenhuma variável fica sem desenho</h2>
+        <p>
+          A maior fonte de erro numa verificação dessas é digitar a distância certa no
+          campo errado. Por isso as abas Geometria e UFM têm um botão que abre o diagrama
+          de referência identificando cada ângulo e cada distância de entrada. Clique para
+          ampliar.
+        </p>
+      </div>
+
+      <div class="gallery">
+        <figure class="zoomable reveal">
+          <img src="img/diagrama-entradas.png" width="851" height="743" loading="lazy" decoding="async"
+               alt="Diagrama de referência da chapa identificando H, W, a, b, L, Le, s e os ângulos theta_b, theta_c e theta_B." />
+          <figcaption>
+            <b>Entradas da geometria</b>
+            H, W, a, b, L, Le, s e os ângulos das bordas &mdash; incluindo &theta;B, que é
+            calculado e não digitado.
+          </figcaption>
+        </figure>
+
+        <figure class="zoomable reveal">
+          <img src="img/diagrama-naoortogonal.png" width="756" height="779" loading="lazy" decoding="async"
+               alt="Diagrama dos ângulos de não-ortogonalidade theta_bb e theta_cc e das distâncias yb e yc." />
+          <figcaption>
+            <b>Interfaces não ortogonais</b>
+            De onde se medem &theta;bb e &theta;cc, e como isso desloca as distâncias
+            yb e yc.
+          </figcaption>
+        </figure>
+
+        <figure class="zoomable reveal">
+          <img src="img/diagrama-ufm.png" width="945" height="802" loading="lazy" decoding="async"
+               alt="Diagrama de referência do Método das Forças Uniformes com alpha, beta, eb, ec, theta e as quatro forças de interface." />
+          <figcaption>
+            <b>Método das Forças Uniformes</b>
+            &alpha;, &beta;, eb, ec e as quatro forças de interface Vrc, Hrc, Vrb e Hrb.
+          </figcaption>
+        </figure>
+
+        <figure class="zoomable reveal">
+          <img src="img/desenho-chapa.png" width="893" height="850" loading="lazy" decoding="async"
+               alt="Desenho da chapa gerado pelo programa a partir do Exemplo 1, com a seção de Whitmore em verde e a linha de parafusos." />
+          <figcaption>
+            <b>A chapa desenhada</b>
+            Saída do programa para o Exemplo 1: a seção de Whitmore em verde, a quina em
+            vermelho e a linha de trabalho da diagonal.
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================= validacao -->
+  <section class="section section-alt" id="validacao">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="kicker">Validação</p>
+        <h2>O que foi conferido, e o que ainda não fechou</h2>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <ul class="check-list reveal">
+            <li>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5" /></svg>
+              <span><b>Geometria:</b> os 12 exemplos publicados por Chambers &amp; Bartley (2007) são
+              reproduzidos pelas fórmulas fechadas, já com a errata de 2008 aplicada.</span>
+            </li>
+            <li>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5" /></svg>
+              <span><b>Testes automatizados:</b> 17 testes rodam a cada envio de código &mdash; o
+              Exemplo 1 fixado casa por casa, o UFM como regressão, e a comparação entre o
+              motor Python e o JavaScript desta página.</span>
+            </li>
+            <li>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5" /></svg>
+              <span><b>UFM:</b> conferido contra o exemplo do Steel Tube Institute (Packer &amp;
+              Richardson, 2025), com boa concordância geral.</span>
+            </li>
+            <li>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5" /></svg>
+              <span><b>Relatório técnico:</b> um PDF com a teoria, as fórmulas e a validação
+              numérica acompanha o repositório.</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="callout reveal">
+          <h3>Uma verificação ainda em aberto</h3>
+          <p>
+            Este material tem <b>finalidade de estudo e apoio ao cálculo</b>. Os resultados
+            devem sempre ser conferidos por um engenheiro estrutural habilitado.
+          </p>
+          <p>
+            Na aba UFM, a verificação de <b>plastificação da parede da coluna HSS</b> para o
+            menor comprimento de contato apresenta uma diferença ainda não esclarecida em
+            relação ao valor publicado no artigo do Steel Tube Institute. O comportamento
+            atual está documentado como teste de regressão em
+            <code>tests/test_ufm_calc.py</code>. Confira esse caso manualmente contra o
+            AISC Design Guide 24 antes de usá-lo em projeto.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================== referencias -->
+  <section class="section" id="referencias">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="kicker">Referências</p>
+        <h2>De onde vem cada fórmula</h2>
+      </div>
+
+      <ul class="refs">
+        <li>
+          <b>Chambers, J.J. &amp; Bartley, T.C. (2007)</b> &mdash; "Geometric Formulas for Gusset Plate Design"
+          <span>Engineering Journal, AISC, 3Q/2007, com errata 1Q/2008 &middot; geometria, yb, yc e os comprimentos L1, L2 e L3</span>
+        </li>
+        <li>
+          <b>Thornton, W.A. &amp; Lini, C. (2011)</b> &mdash; "The Whitmore Section"
+          <span>Modern Steel Construction, AISC, julho/2011 &middot; método da pseudo-coluna</span>
+        </li>
+        <li>
+          <b>Cheng, J.J.R. &amp; Kulak, G.L. (2000)</b> &mdash; "Gusset Plate Connection to Round HSS Tension Members"
+          <span>Engineering Journal, AISC, 4Q/2000 &middot; retardo de cisalhamento em HSS circular</span>
+        </li>
+        <li>
+          <b>Packer, J. &amp; Richardson, S. (2025)</b> &mdash; "HSS Brace Connections to HSS Columns and WF Beams"
+          <span>Steel Tube Institute &middot; exemplo completo de UFM usado na validação</span>
+        </li>
+        <li>
+          <b>Packer, J.A. &amp; Olson, K. (2024)</b> &mdash; "Hollow Structural Section Connections"
+          <span>AISC Design Guide 24, 2ª edição &middot; plastificação da parede da coluna HSS</span>
+        </li>
+        <li>
+          <b>Williams, G.C. &amp; Richard, R.M. (1986)</b>
+          <span>Bloco de cisalhamento equivalente na seção de Whitmore</span>
+        </li>
       </ul>
     </div>
+  </section>
 
-    <div class="card">
-      <h2>Como usar</h2>
-      <ol>
-        <li>Baixe o <code>CalculadoraGussetPlate.exe</code> e coloque numa pasta qualquer do seu computador.</li>
-        <li>Dê um duplo-clique para abrir. O Windows pode avisar que o executável não tem assinatura reconhecida — clique em "Mais informações" → "Executar assim mesmo".</li>
-        <li>Preencha os dados na aba correspondente (Geometria, Material/Carga, HSS circular ou UFM) e clique em "Calcular".</li>
-        <li>Use os botões de diagrama de referência para identificar cada variável de entrada.</li>
-        <li>Exporte o relatório em PDF quando terminar.</li>
-      </ol>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p style="margin:0">
+      &copy; <span id="ano">2026</span> Matheus Raposo &middot; material de estudo e apoio ao cálculo
+    </p>
+    <div class="footer-links">
+      <a href="https://github.com/matheusmerlim1/calculadora-gusset-plate">Código-fonte</a>
+      <a href="https://github.com/matheusmerlim1/calculadora-gusset-plate/releases/latest">Versões</a>
+      <a href="https://matheusmerlim1.github.io/">Portfólio</a>
     </div>
+  </div>
+</footer>
 
-    <div class="warn">
-      <strong>Este material tem finalidade de estudo e apoio ao cálculo.</strong>
-      Os resultados devem sempre ser conferidos por um engenheiro estrutural
-      habilitado. A aba UFM foi validada contra um exemplo publicado do Steel
-      Tube Institute, mas uma verificação específica (plastificação da parede
-      da coluna HSS para o menor comprimento de contato) apresenta diferença
-      não totalmente esclarecida em relação ao valor publicado — conferir
-      manualmente contra o AISC Design Guide 24 antes de uso em projeto.
-    </div>
+<div class="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Imagem ampliada">
+  <button class="lightbox-close" type="button" aria-label="Fechar a imagem ampliada">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+      <path d="M18 6L6 18M6 6l12 12" />
+    </svg>
+  </button>
+  <img src="" alt="" />
+  <p class="lightbox-cap"></p>
+</div>
 
-    <footer>
-      Código-fonte no <a href="https://github.com/matheusmerlim1/calculadora-gusset-plate">GitHub</a>.
-    </footer>
-  </main>
+<script src="js/whitmore.js"></script>
+<script src="js/site.js"></script>
+
 <!-- === Botao de volta ao portfolio - cole antes de </body> === -->
 <a id="mr-portfolio-btn" href="https://matheusmerlim1.github.io/" target="_blank" rel="noopener"
    aria-label="Abrir o portf&oacute;lio de Matheus Raposo" title="Ver todos os meus projetos">

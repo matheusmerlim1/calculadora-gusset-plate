@@ -50,3 +50,18 @@ jobs:
 
       - name: Run tests
         run: python -m pytest tests -q
+
+      # A pagina do projeto traz uma demonstracao ao vivo da secao de Whitmore.
+      # O porte em JavaScript so pode divergir do motor Python se este passo falhar.
+      - name: Set up Node
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: "22"
+
+      - name: Check the JavaScript port against the Python engine
+        run: node --test tests/test_whitmore_js.mjs
+
+      - name: Check that the fixtures still match the Python engine
+        run: |
+          python tools/gen_js_fixtures.py
+          git diff --exit-code -- tests/fixtures_whitmore.json
