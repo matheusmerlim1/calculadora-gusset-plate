@@ -526,7 +526,8 @@ figure figcaption { font-size: .8rem; color: var(--muted); margin-top: 9px; }
 
 .gallery { display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 700px)  { .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (min-width: 1040px) { .gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+/* quatro diagramas: em 3 colunas o quarto ficava sozinho na fileira de baixo; 2 × 2 fecha a grade
+   e deixa cada desenho largo o bastante para ler as cotas */
 
 .gallery figure {
   background: var(--surface); border: 1px solid var(--border);

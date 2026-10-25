@@ -253,7 +253,8 @@
       });
     }
 
-    window.addEventListener("resize", desenharWhitmore);
+    // sem o embrulho o evento chegava como `r` e o desenho quebrava ao redimensionar
+    window.addEventListener("resize", function () { desenharWhitmore(); });
     atualizarDemo();
   }
 
