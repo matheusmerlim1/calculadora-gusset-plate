@@ -15,7 +15,8 @@
 
   --text:          #151a21;
   --text-soft:     #3d4855;
-  --muted:         #64707f;
+  --muted:         #5b6675;   /* 5,0:1 sobre --bg-alt e --navy-soft; o #64707f anterior dava 4,3 */
+  --control-border: #8a96a5;  /* borda/trilho de controles: 3,0:1 sobre --surface (WCAG 1.4.11) */
 
   --accent:        #8e2c2c;   /* vermelho da marca */
   --accent-soft:   #f6e7e7;
@@ -56,6 +57,7 @@
     --text:          #e7ecf3;
     --text-soft:     #c2cbd7;
     --muted:         #94a1b1;
+    --control-border: #6b7787;
     --accent:        #e28b8b;
     --accent-soft:   #2e1b1b;
     --navy:          #83aee2;
@@ -81,6 +83,7 @@
   --text:          #e7ecf3;
   --text-soft:     #c2cbd7;
   --muted:         #94a1b1;
+  --control-border: #6b7787;  /* 3,8:1 sobre --surface escuro */
   --accent:        #e28b8b;
   --accent-soft:   #2e1b1b;
   --navy:          #83aee2;
@@ -144,6 +147,16 @@ code:not(pre code) {
   padding: 0; margin: -1px; overflow: hidden;
   clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
+
+/* atalho de teclado: fica fora da tela ate receber foco */
+.skip-link {
+  position: absolute; left: 12px; top: -60px; z-index: 2147483001;
+  padding: 10px 16px; border-radius: 8px;
+  background: var(--navy); color: var(--surface);
+  font-weight: 650; text-decoration: none;
+}
+.skip-link:focus { top: 12px; color: var(--surface); }
+main:focus { outline: none; }   /* alvo do atalho; nao e controle, nao precisa de anel */
 
 /* --------------------------------------------------------------- cabecalho */
 
@@ -219,9 +232,11 @@ code:not(pre code) {
     box-shadow: var(--shadow-lg);
     margin-left: 0;
     max-height: 0; overflow: hidden;
-    transition: max-height .25s ease;
+    /* visibility tira os links recolhidos da ordem do Tab (so muda depois da animacao) */
+    visibility: hidden;
+    transition: max-height .25s ease, visibility 0s linear .25s;
   }
-  .site-nav.is-open { max-height: 420px; }
+  .site-nav.is-open { max-height: 420px; visibility: visible; transition-delay: 0s; }
   .site-nav ul { flex-direction: column; align-items: stretch; padding: 8px var(--gutter) 14px; gap: 0; }
   .site-nav a { padding: 11px 10px; font-size: .95rem; border-radius: 8px; }
   .nav-toggle { display: inline-flex; margin-left: auto; }
@@ -395,7 +410,7 @@ code:not(pre code) {
 
 .kv { margin: 18px 0 0; }
 .kv h4 {
-  font-size: .74rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  font-size: .76rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
   color: var(--muted); margin: 0 0 8px;
 }
 .kv dl { margin: 0; display: grid; gap: 0; }
@@ -405,7 +420,7 @@ code:not(pre code) {
   font-size: .875rem; align-items: baseline;
 }
 .kv div:last-child { border-bottom: 1px solid var(--border); }
-.kv dt { font-family: var(--mono); font-size: .84em; color: var(--navy); font-weight: 600; }
+.kv dt { font-family: var(--mono); font-size: .86em; color: var(--navy); font-weight: 600; }
 .kv dd { margin: 0; color: var(--text-soft); }
 
 .formula {
@@ -419,6 +434,8 @@ code:not(pre code) {
   display: block; font-family: var(--sans); font-style: normal;
   font-size: .78rem; color: var(--muted); margin-top: 7px;
 }
+/* nos textos de .78-.8rem o code a .9em ficava abaixo de 12px */
+.formula em code, .src code { font-size: 1em; }
 
 .src {
   margin-top: 16px; font-size: .8rem; color: var(--muted);
@@ -435,6 +452,16 @@ figure.zoomable img {
   transition: border-color .15s, box-shadow .15s;
 }
 figure.zoomable img:hover { border-color: var(--accent); box-shadow: var(--shadow-md); }
+
+/* o JS embrulha cada imagem ampliavel num <button>, para abrir tambem pelo teclado */
+.zoom-btn {
+  display: block; width: 100%; padding: 0; margin: 0;
+  border: 0; background: none; font: inherit; color: inherit;
+  cursor: zoom-in; border-radius: var(--radius);
+}
+.zoom-btn:focus-visible { outline: 3px solid var(--navy); outline-offset: 3px; }
+.window .zoom-btn { border-radius: 0; }
+.window .zoom-btn:focus-visible { outline-offset: -3px; }
 figure figcaption { font-size: .8rem; color: var(--muted); margin-top: 9px; }
 
 .window.zoomable img { cursor: zoom-in; border: 0; border-radius: 0; }
@@ -460,13 +487,21 @@ figure figcaption { font-size: .8rem; color: var(--muted); margin-top: 9px; }
   font-size: .84rem; color: var(--navy);
   background: var(--navy-soft); border-radius: 5px; padding: 1px 7px;
 }
+/* a area de toque tem 24px de altura (WCAG 2.5.8); o trilho visivel continua com 4px */
 .control input[type="range"] {
   -webkit-appearance: none; appearance: none;
-  width: 100%; height: 4px; border-radius: 3px; background: var(--border-strong);
-  outline: none; cursor: pointer;
+  display: block; width: 100%; height: 24px; margin: 0;
+  background: transparent; cursor: pointer;
+}
+.control input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px; border-radius: 3px; background: var(--control-border);
+}
+.control input[type="range"]::-moz-range-track {
+  height: 4px; border-radius: 3px; background: var(--control-border);
 }
 .control input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none; appearance: none;
+  margin-top: -6.5px;
   width: 17px; height: 17px; border-radius: 50%;
   background: var(--accent); border: 2px solid var(--surface);
   box-shadow: 0 1px 4px rgba(0, 0, 0, .3); cursor: grab;
@@ -475,12 +510,12 @@ figure figcaption { font-size: .8rem; color: var(--muted); margin-top: 9px; }
   width: 15px; height: 15px; border-radius: 50%;
   background: var(--accent); border: 2px solid var(--surface); cursor: grab;
 }
-.control input[type="range"]:focus-visible { outline: 2px solid var(--navy); outline-offset: 4px; }
+.control input[type="range"]:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
 
 .control select {
   width: 100%; padding: 8px 10px; font: inherit; font-size: .88rem;
   color: var(--text); background: var(--surface-2);
-  border: 1px solid var(--border-strong); border-radius: 8px;
+  border: 1px solid var(--control-border); border-radius: 8px;
 }
 
 .demo-out { display: grid; gap: 18px; align-content: start; }
@@ -499,11 +534,11 @@ figure figcaption { font-size: .8rem; color: var(--muted); margin-top: 9px; }
 @media (min-width: 560px) { .results { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .result { background: var(--surface); padding: 13px 15px; }
 .result span {
-  display: block; font-size: .73rem; color: var(--muted);
+  display: block; font-size: .76rem; color: var(--muted);
   text-transform: uppercase; letter-spacing: .05em; font-weight: 650;
 }
 .result b { font-family: var(--mono); font-size: 1.02rem; font-weight: 680; color: var(--text); }
-.result b small { font-family: var(--sans); font-size: .68em; font-weight: 500; color: var(--muted); }
+.result b small { font-family: var(--sans); font-size: .75em; font-weight: 500; color: var(--muted); }
 
 .dcr { display: grid; gap: 11px; }
 .dcr-row {
@@ -586,9 +621,12 @@ figure figcaption { font-size: .8rem; color: var(--muted); margin-top: 9px; }
   padding: clamp(14px, 4vw, 48px);
   background: rgba(8, 11, 16, .86);
   -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
-  opacity: 0; pointer-events: none; transition: opacity .18s;
+  /* fechado, fica invisivel tambem para o teclado e o leitor de tela (visibility),
+     mas so depois do fade-out */
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .18s, visibility 0s linear .18s;
 }
-.lightbox.is-open { opacity: 1; pointer-events: auto; }
+.lightbox.is-open { opacity: 1; visibility: visible; pointer-events: auto; transition-delay: 0s; }
 .lightbox img {
   max-width: 100%; max-height: 100%;
   border-radius: 10px; background: #fff;
@@ -602,6 +640,7 @@ figure figcaption { font-size: .8rem; color: var(--muted); margin-top: 9px; }
   border: 1px solid rgba(255, 255, 255, .28); cursor: pointer;
 }
 .lightbox-close:hover { background: rgba(255, 255, 255, .24); }
+.lightbox-close:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 .lightbox-cap {
   position: absolute; left: 0; right: 0; bottom: 14px;
   text-align: center; color: #dfe5ee; font-size: .84rem; padding-inline: 20px;

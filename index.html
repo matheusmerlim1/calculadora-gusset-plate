@@ -15,7 +15,7 @@
   <meta property="og:url" content="https://matheusmerlim1.github.io/calculadora-gusset-plate/" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <link rel="stylesheet" href="css/site.css?v=20261025" />
+  <link rel="stylesheet" href="css/site.css?v=20261028" />
 
   <script>
     /* Marca que ha JavaScript antes da primeira pintura. So entao o CSS
@@ -32,6 +32,8 @@
   </script>
 </head>
 <body>
+
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
 <header class="site-header">
   <div class="header-inner">
@@ -70,7 +72,7 @@
   </div>
 </header>
 
-<main>
+<main id="conteudo" tabindex="-1">
 
   <!-- ============================================================ hero -->
   <section class="hero" id="inicio">
@@ -556,6 +558,9 @@
             </div>
           </div>
 
+          <!-- resumo para leitor de tela: anunciado sem pressa, depois que o controle para de mexer -->
+          <p class="sr-only" id="demo-status" role="status" aria-live="polite"></p>
+
           <p class="demo-note">
             Razão demanda/capacidade: acima de 1,00 a barra fica vermelha e a verificação
             não passa. Unidades imperiais, com E = 29 000 ksi e &phi; = 0,90 nas duas
@@ -730,7 +735,7 @@
   </div>
 </footer>
 
-<div class="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Imagem ampliada">
+<div class="lightbox" role="dialog" aria-modal="true" aria-label="Imagem ampliada">
   <button class="lightbox-close" type="button" aria-label="Fechar a imagem ampliada">
     <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
       <path d="M18 6L6 18M6 6l12 12" />
@@ -740,18 +745,20 @@
   <p class="lightbox-cap"></p>
 </div>
 
-<script src="js/whitmore.js"></script>
-<script src="js/site.js?v=20261025"></script>
+<script src="js/whitmore.js?v=20261028"></script>
+<script src="js/site.js?v=20261028"></script>
 
 <!-- === Botao de volta ao portfolio - cole antes de </body> === -->
+<nav aria-label="Portfólio">
 <a id="mr-portfolio-btn" href="https://matheusmerlim1.github.io/" target="_blank" rel="noopener"
-   aria-label="Abrir o portf&oacute;lio de Matheus Raposo" title="Ver todos os meus projetos">
+   aria-label="Portf&oacute;lio de Matheus Raposo (abre em nova aba)" title="Ver todos os meus projetos">
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/>
   </svg>
   <span>Portf&oacute;lio</span>
 </a>
+</nav>
 <style>
 #mr-portfolio-btn {
   position: fixed; top: 12px; right: 12px; z-index: 2147483000;

@@ -38,12 +38,17 @@
     }
     var botao = $(".theme-toggle");
     if (!botao) return;
+    var rotular = function (tema) {
+      botao.setAttribute("aria-label",
+        tema === "dark" ? "Mudar para tema claro" : "Mudar para tema escuro");
+    };
+    // o HTML sai com o rotulo do tema claro; acerta para o tema que de fato abriu
+    rotular(temaAtual());
     botao.addEventListener("click", function () {
       var novo = temaAtual() === "dark" ? "light" : "dark";
       document.documentElement.setAttribute("data-theme", novo);
       gravarTema(novo);
-      botao.setAttribute("aria-label",
-        novo === "dark" ? "Mudar para tema claro" : "Mudar para tema escuro");
+      rotular(novo);
       desenharWhitmore();   // o desenho usa as cores do tema
     });
   }
@@ -73,6 +78,13 @@
           nav.classList.remove("is-open");
           toggle.setAttribute("aria-expanded", "false");
         }
+      });
+      // Esc fecha o menu aberto e devolve o foco ao botao que o abriu
+      document.addEventListener("keydown", function (ev) {
+        if (ev.key !== "Escape" || !nav.classList.contains("is-open")) return;
+        nav.classList.remove("is-open");
+        toggle.setAttribute("aria-expanded", "false");
+        toggle.focus();
       });
     }
   }
@@ -164,6 +176,7 @@
     if (!caixa) return;
     var img = $("img", caixa);
     var cap = $(".lightbox-cap", caixa);
+    var fecharBtn = $(".lightbox-close", caixa);
     var ultimoFoco = null;
 
     function abrir(src, alt, legenda) {
@@ -172,35 +185,51 @@
       img.alt = alt || "";
       cap.textContent = legenda || "";
       caixa.classList.add("is-open");
-      caixa.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
-      $(".lightbox-close", caixa).focus();
+      fecharBtn.focus();
     }
 
     function fechar() {
       caixa.classList.remove("is-open");
-      caixa.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
       if (ultimoFoco && ultimoFoco.focus) ultimoFoco.focus();
     }
 
-    document.addEventListener("click", function (ev) {
-      var alvo = ev.target.closest ? ev.target.closest(".zoomable img") : null;
-      if (!alvo) return;
-      var fig = alvo.closest("figure, .window");
-      var legenda = "";
-      if (fig) {
-        var fc = fig.querySelector("figcaption") || fig.querySelector(".window-bar span");
-        if (fc) legenda = fc.textContent.trim();
-      }
-      abrir(alvo.currentSrc || alvo.src, alvo.alt, legenda);
+    function legendaDe(el) {
+      var fig = el.closest("figure, .window");
+      if (!fig) return "";
+      var fc = fig.querySelector("figcaption") || fig.querySelector(".window-bar span");
+      return fc ? fc.textContent.replace(/\s+/g, " ").trim() : "";
+    }
+
+    /* Cada imagem ampliavel vai para dentro de um <button>: assim ela entra
+       na ordem do Tab e abre com Enter/Espaco, nao so com o mouse. O nome do
+       botao diz a acao e repete o alt, que continua sendo o texto da imagem. */
+    $$(".zoomable img").forEach(function (foto) {
+      var botao = document.createElement("button");
+      botao.type = "button";
+      botao.className = "zoom-btn";
+      botao.setAttribute("aria-label", "Ampliar imagem: " + (foto.alt || legendaDe(foto)));
+      foto.parentNode.insertBefore(botao, foto);
+      botao.appendChild(foto);
+      botao.addEventListener("click", function () {
+        abrir(foto.currentSrc || foto.src, foto.alt, legendaDe(foto));
+      });
     });
 
     caixa.addEventListener("click", function (ev) {
       if (ev.target === caixa || ev.target.closest(".lightbox-close")) fechar();
     });
     document.addEventListener("keydown", function (ev) {
-      if (ev.key === "Escape" && caixa.classList.contains("is-open")) fechar();
+      if (!caixa.classList.contains("is-open")) return;
+      if (ev.key === "Escape") {
+        ev.preventDefault();
+        fechar();
+      } else if (ev.key === "Tab") {
+        // o unico controle do modal e o botao de fechar: o foco fica preso nele
+        ev.preventDefault();
+        fecharBtn.focus();
+      }
     });
   }
 
@@ -256,6 +285,7 @@
     // sem o embrulho o evento chegava como `r` e o desenho quebrava ao redimensionar
     window.addEventListener("resize", function () { desenharWhitmore(); });
     atualizarDemo();
+    demo.anunciar = true;   // o calculo inicial nao e anunciado, so as mudancas
   }
 
   function lerDemo() {
@@ -284,7 +314,10 @@
       var saida = $("#val-" + k, demo.raiz);
       if (!saida) return;
       var casas = (k === "tp" || k === "K") ? (k === "tp" ? 3 : 2) : 1;
-      saida.textContent = fmt(ent[k], casas) + (UNIDADE[k] || "");
+      var texto = fmt(ent[k], casas) + (UNIDADE[k] || "");
+      saida.textContent = texto;
+      // o leitor de tela le o valor com unidade, nao so o numero cru do range
+      demo.campos[k].setAttribute("aria-valuetext", texto.replace(".", ","));
     });
 
     def(demo.saidas.Lw, fmt(r.Lw, 2), "in");
@@ -296,8 +329,28 @@
 
     barra("dcr-y", r.DCR_yield);
     barra("dcr-b", r.DCR_buckling);
+    anunciar(r);
 
     desenharWhitmore(r, ent);
+  }
+
+  /* Resumo das duas razoes D/C para leitor de tela. Espera o controle parar
+     (o range dispara um "input" a cada passo) para nao enfileirar dezenas de
+     anuncios; e diz em palavras o que a barra diz pela cor. */
+  var esperaAnuncio = 0;
+  function anunciar(r) {
+    var alvo = document.getElementById("demo-status");
+    if (!alvo || !demo.anunciar) return;
+    var frase = function (nome, dcr) {
+      if (!isFinite(dcr)) return nome + ": sem resultado";
+      return nome + " " + dcr.toFixed(2).replace(".", ",") +
+             (dcr > 1 ? ", não passa" : ", passa");
+    };
+    clearTimeout(esperaAnuncio);
+    esperaAnuncio = setTimeout(function () {
+      alvo.textContent = "Razão demanda/capacidade: " +
+        frase("escoamento", r.DCR_yield) + "; " + frase("flambagem", r.DCR_buckling) + ".";
+    }, 700);
   }
 
   var UNIDADE = { L: " in", s: " in", tp: " in", Fy: " ksi", K: "", Lc: " in", Pu: " kips" };
